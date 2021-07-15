@@ -5,7 +5,7 @@ import { findItemIndexAtPosition } from './helpers'
 import { useDrag } from './hooks'
 import { Point } from './types'
 
-type Props = HTMLAttributes<HTMLDivElement> & {
+type Props = HTMLAttributes<HTMLSpanElement> & {
   children: React.ReactNode
   /** Determines whether drag functionality is enabled, defaults to true */
   allowDrag?: boolean
@@ -18,10 +18,10 @@ type Props = HTMLAttributes<HTMLDivElement> & {
 // this context is only used so that SortableItems can register/remove themselves
 // from the items list
 type Context = {
-  registerItem: (item: HTMLDivElement) => void
-  removeItem: (item: HTMLDivElement) => void
-  registerKnob:  (item: HTMLDivElement) => void
-  removeKnob:  (item: HTMLDivElement) => void
+  registerItem: (item: HTMLSpanElement) => void
+  removeItem: (item: HTMLSpanElement) => void
+  registerKnob:  (item: HTMLSpanElement) => void
+  removeKnob:  (item: HTMLSpanElement) => void
 }
 
 const SortableListContext = React.createContext<Context | undefined>(undefined)
@@ -34,7 +34,7 @@ const SortableList = ({ children, allowDrag = true, onSortEnd, draggedItemClassN
   // Hold all registered knobs
   const knobs = React.useRef<HTMLElement[]>([]);
   // contains the container element
-  const containerRef = React.useRef<HTMLDivElement | null>(null)
+  const containerRef = React.useRef<HTMLSpanElement | null>(null)
   // contains the target element (copy of the source element)
   const targetRef = React.useRef<HTMLElement | null>(null)
   // contains the index in the itemsRef array of the element being dragged
@@ -223,22 +223,22 @@ const SortableList = ({ children, allowDrag = true, onSortEnd, draggedItemClassN
     },
   })
 
-  const registerItem = React.useCallback((item: HTMLDivElement) => {
+  const registerItem = React.useCallback((item: HTMLSpanElement) => {
     itemsRef.current.push(item)
   }, [])
 
-  const removeItem = React.useCallback((item: HTMLDivElement) => {
+  const removeItem = React.useCallback((item: HTMLSpanElement) => {
     const index = itemsRef.current.indexOf(item)
     if (index !== -1) {
       itemsRef.current.splice(index, 1)
     }
   }, [])
 
-  const registerKnob = React.useCallback((item: HTMLDivElement) => {
+  const registerKnob = React.useCallback((item: HTMLSpanElement) => {
     knobs.current.push(item)
   }, [])
 
-  const removeKnob = React.useCallback((item: HTMLDivElement) => {
+  const removeKnob = React.useCallback((item: HTMLSpanElement) => {
     const index = knobs.current.indexOf(item)
 
     if (index !== -1) {
@@ -251,9 +251,9 @@ const SortableList = ({ children, allowDrag = true, onSortEnd, draggedItemClassN
   const context = React.useMemo(() => ({ registerItem, removeItem, registerKnob, removeKnob }), [registerItem, removeItem, registerKnob, removeKnob])
 
   return (
-    <div {...(allowDrag ? listeners : {})} {...rest} ref={containerRef}>
+    <span {...(allowDrag ? listeners : {})} {...rest} ref={containerRef}>
       <SortableListContext.Provider value={context}>{children}</SortableListContext.Provider>
-    </div>
+    </span>
   )
 }
 
@@ -272,7 +272,7 @@ export const SortableItem = ({ children }: ItemProps) => {
     throw new Error('SortableItem must be a child of SortableList')
   }
   const { registerItem, removeItem } = context
-  const elementRef = React.useRef<HTMLDivElement | null>(null)
+  const elementRef = React.useRef<HTMLSpanElement | null>(null)
 
   React.useEffect(() => {
     const currentItem = elementRef.current
@@ -300,7 +300,7 @@ export const SortableKnob = ({ children  }: ItemProps) => {
 
   const { registerKnob, removeKnob } = context;
 
-  const elementRef = React.useRef<HTMLDivElement | null>(null)
+  const elementRef = React.useRef<HTMLSpanElement | null>(null)
 
   React.useEffect(() => {
     const currentItem = elementRef.current
